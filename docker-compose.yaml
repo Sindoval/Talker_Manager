@@ -1,0 +1,47 @@
+version: '3'
+services:
+  node:
+    # Faz o docker construir (build) de uma imagem personalizada
+    # baseada no arquivo Dockerfile
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+    # Nome do container para facilitar execução
+    container_name: talker_manager_api
+    # Restarta a imagem caso algo a faça parar
+    restart: always
+    # Diretório padrão de execução
+    working_dir: /app
+    # Lista de volumes (diretórios) mapeados de fora para dentro do container
+    volumes:
+      # Monta o diretório atual, com todos os dados da aplicação, dentro do diretório /app
+      - ./:/app
+    ports:
+      - 3001:3001
+    environment:
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_HOST: database
+      MYSQL_PORT: 3306
+    # Informa ao docker, para que o container node seja iniciado após o container database
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: mysql:8.0.29
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: talkermanagerdb
+    healthcheck:
+      # Deve aguardar o banco ficar operacional
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 5
+    ports:
+      - "33060:3306"
+    volumes:
+      - ./talkermanager_script.sql:/docker-entrypoint-initdb.d/talkermanager_script.sql
