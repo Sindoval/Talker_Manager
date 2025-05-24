@@ -1,0 +1,32 @@
+{
+  "name": "talker_manager",
+  "version": "1.0.0",
+  "description": "Criação de uma API REST para uma aplicação de cadastro de talkers (palestrantes) em que será possível cadastrar, visualizar, pesquisar, editar e excluir informações",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests/**/*.test.js --exit",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "lint": "eslint --no-inline-config --no-error-on-unmatched-pattern -c .eslintrc.json ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sindoval/Talker_Manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sindoval/Talker_Manager/issues"
+  },
+  "homepage": "https://github.com/Sindoval/Talker_Manager#readme",
+  "devDependencies": {
+    "eslint": "6.8.0",
+    "eslint-config-trybe-backend": "1.0.1",
+    "nodemon": "2.0.15"
+  },
+  "dependencies": {
+    "express": "4.17.1",
+    "mysql2": "3.0.0"
+  }
+}
