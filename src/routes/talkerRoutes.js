@@ -1,6 +1,6 @@
 const express = require('express');
-const { findAll, findById, insert, update, remove, findSearch } = require('../db/talkerDB');
-const { formatData } = require('../utils');
+const { findAll, findById, insert, update, remove, parcialUpdate } = require('../db/talkerDB');
+const { formatData, allFilters } = require('../utils');
 const {
   validToken,
   validateName,
@@ -8,6 +8,8 @@ const {
   validateTalk,
   validateWatchedAt,
   validateRate,
+  validQueryRate,
+  validBodyRate,
 } = require('../middlewares/talker_middlewares');
 
 const router = express.Router();
@@ -25,15 +27,13 @@ router.get('/', async (_req, res) => {
   }
 });
 
-router.get('/search', validToken, async (req, res) => {
-  const { q } = req.query;
+router.get('/search', validToken, validQueryRate, async (req, res) => {
+  const { q, rate, date } = req.query;
+  const [result] = await findAll();
   try {
-    if (!q || q === '') {
-      const [result] = await findAll();
-      return res.status(200).json(formatData(result));
-    }
-    const [result] = await findSearch(q);
-    return res.status(200).json(formatData(result));
+    const filterResult = allFilters(result, { q, rate: Number(rate), date });
+    return res.status(200).json(formatData(filterResult));
+
   } catch (error) {
     return res.status(500).json({ message: error.sqlMessage })
   }
@@ -94,6 +94,18 @@ router.put('/:id',
       return res.status(500).json({ message: error.sqlMessage });
     }
   });
+
+router.patch('/rate/:id', validBodyRate, async (req, res) => {
+  const { id } = req.params;
+  const { rate } = req.body;
+
+  try {
+    await parcialUpdate(Number(rate), Number(id));
+    res.status(204);
+  } catch (error) {
+    res.status(500).json({ message: error.sqlMessage });
+  }
+});
 
 router.delete('/:id', async (req, res) => {
   const id = Number(req.params.id);
