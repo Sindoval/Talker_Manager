@@ -21,13 +21,16 @@ const update = (talker, id) => connection.execute(
   [talker.name, talker.age, talker.talk.watchedAt, talker.talk.rate, id],
 );
 
+const parcialUpdate = (rate, id) => connection.execute(
+  `
+  UPDATE talkermanagerdb.talkers
+  SET talk_rate = ?
+  WHERE id = ? 
+  `, [rate, id]
+)
+
 const remove = (id) => connection.execute(
   `DELETE FROM talkermanagerdb.talkers WHERE id = ?`, [id],
-);
-
-const findSearch = (query) => connection.execute(
-  `SELECT * FROM talkermanagerdb.talkers WHERE name LIKE ?`,
-  [`%${query}%`],
 );
 
 module.exports = {
@@ -36,5 +39,5 @@ module.exports = {
   insert,
   update,
   remove,
-  findSearch,
+  parcialUpdate,
 };

@@ -38,8 +38,54 @@ function formatData(array) {
   return mapData;
 }
 
+function nameFilter(array, query) {
+  const filter = array.filter(({ name }) => name.includes(query));
+  return filter;
+};
+
+function rateFilter(array, query) {
+  const filter = array.filter(({ talk_rate }) => talk_rate === Number(query));
+  return filter;
+};
+
+function dateFilter(array, query) {
+  const filter = array.filter(({ talk_watched_at }) => talk_watched_at === query);
+  return filter;
+};
+
+function allFilters(array, objquery) {
+  let { q, rate, date } = objquery;
+
+  // Limpa e valida entradas
+  q = q?.trim();
+  date = date?.trim();
+
+  const hasValidQ = q && q !== '';
+  const hasValidRate = rate && rate !== '' && !isNaN(rate);
+  const hasValidDate = date && date !== '';
+
+  let filtered = array;
+
+  if (hasValidDate) {
+    filtered = dateFilter(filtered, date);
+  }
+
+  if (hasValidRate) {
+    filtered = rateFilter(filtered, rate);
+  }
+
+  if (hasValidQ) {
+    filtered = nameFilter(filtered, q);
+  }
+
+  return filtered;
+
+}
+
+
 module.exports = {
   generateToken,
   isDataValidate,
   formatData,
+  allFilters,
 };
